@@ -20,7 +20,7 @@ def get_event_list(club_id):
     )
     mycursor = mydb.cursor() 
 
-    mycursor.execute("select event_id, name, date, venue, about, proposal, fac_approval, dean_approval, remarks from event where club_id=%s",(club_id,))
+    mycursor.execute("select event_id, name, date, venue, about, fac_approval, dean_approval, remarks, proposal from event where club_id=%s",(club_id,))
     result=mycursor.fetchall()
     mycursor.close()
     mydb.close()
@@ -47,7 +47,7 @@ def event_creation(club_id):
             )
             mycursor = mydb.cursor()
             sql=("insert into event values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
-            values=(event_id,name,date,venue,about,proposal,'Pending','Pending','Event Created',club_id)
+            values=(event_id,name,date,venue,about,'Pending','Pending','Event Created',club_id,proposal)
             mycursor.execute(sql,values)
             mydb.commit()
             st.success("Event Created!")
@@ -55,10 +55,11 @@ def event_creation(club_id):
             mycursor.close()
             mydb.close()
 
+
 def approval_status(club_id):
     st.subheader("Approval Status")
     result=get_event_list(club_id)
-    df = pd.DataFrame(result,columns=("Event ID","Name","Date","Venue","Description","Proposal","Faculty Approval","Dean Approval","Remarks"))
+    df = pd.DataFrame(result,columns=("Event ID","Name","Date","Venue","Description","Faculty Approval","Dean Approval","Remarks","Proposal"))
     st.table(df)
     mydb = mysql.connector.connect(
     host = "localhost",
