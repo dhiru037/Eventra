@@ -23,3 +23,19 @@ INSERT INTO participant(srn, name, phone_no, email, event_id, date) VALUES
 ('PES02', 'Pranav', '21212', 'ps@gmail.com', 'EV01', '2023-11-12'),
 ('PES04', 'Athul', '78890', 'athul@gmail.com', 'EV03', '2023-11-14'),
 ('PES05', 'Abhay', '23394', 'abhay@gmail.com', NULL, NULL);
+
+ALTER TABLE club ADD COLUMN image_url VARCHAR(255);
+ALTER TABLE faculty ADD COLUMN image_url VARCHAR(255);
+ALTER TABLE club_head ADD COLUMN image_url VARCHAR(255);
+
+ 
+UPDATE club SET image_url = 'https://drive.google.com/uc?export=view&id=11khptY6TSJuEof570f0zuGHmObmnS6XZ' WHERE club_id = 'C01';
+UPDATE club SET image_url = 'https://drive.google.com/uc?export=view&id=1fhcluMqrt5YemFIQ6tyM_w63YdmCV1E0' WHERE club_id = 'C02';
+
+UPDATE faculty SET image_url = 'https://drive.google.com/uc?export=view&id=1pBX7uE3n9aoYeTETvAgnEtatN3xjezQo' WHERE faculty_id = 'FAC01';
+UPDATE faculty SET image_url = 'https://drive.google.com/uc?export=view&id=1czHz5uy4-lLXWLL_7pE-aKbnpGl2-7QU' WHERE faculty_id = 'FAC02';
+
+UPDATE club_head SET image_url = 'https://drive.google.com/uc?export=view&id=1FUg5QU-iXuePnMmlPUslcEnT_ZjBYxUW' WHERE head_id = 'MEM01';
+UPDATE club_head SET image_url = 'https://drive.google.com/uc?export=view&id=1uM_rOVLzofVtuBN2Q2FbetUKWGbIVGfZ' WHERE head_id = 'MEM02';
+
+
