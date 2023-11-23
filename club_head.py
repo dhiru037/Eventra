@@ -57,7 +57,6 @@ def event_creation(club_id):
             mydb.close()
 
 
-
 def approval_status(club_id):
     # Connect to the database
     mydb = mysql.connector.connect(
@@ -166,63 +165,36 @@ def club_info(club_id):
         database="project1"
     )
     
-    # Function to get club details
     def get_club_details(club_id):
-        mycursor = mydb.cursor(dictionary=True)
-        mycursor.execute("SELECT club_name, vertical, about FROM club WHERE club_id=%s", (club_id,))
-        result = mycursor.fetchone()
-        mycursor.close()
-        return result
+        with mydb.cursor(dictionary=True) as mycursor:
+            mycursor.execute("SELECT club_name, vertical, about, image_url FROM club WHERE club_id=%s", (club_id,))
+            return mycursor.fetchone()
 
     # Function to get mentor details
     def get_mentor_details(club_id):
-        mycursor = mydb.cursor(dictionary=True)
-        mycursor.execute("SELECT fac_name, faculty_id, phone_no, email FROM faculty WHERE club_id=%s", (club_id,))
-        result = mycursor.fetchone()
-        mycursor.close()
-        return result
+        with mydb.cursor(dictionary=True) as mycursor:
+            mycursor.execute("SELECT fac_name, faculty_id, phone_no, email, image_url FROM faculty WHERE club_id=%s", (club_id,))
+            return mycursor.fetchone()
 
     # Function to get head details
     def get_head_details(club_id):
-        mycursor = mydb.cursor(dictionary=True)
-        mycursor.execute("SELECT name, head_id, phone_no, email FROM club_head WHERE club_id=%s", (club_id,))
-        result = mycursor.fetchone()
-        mycursor.close()
-        return result
-    
-    def get_club_image_url(club_id):
-        mycursor = mydb.cursor()
-        mycursor.execute("SELECT image_url FROM club WHERE club_id = %s", (club_id,))
-        result = mycursor.fetchone()
-        mycursor.close()
-        return result[0] if result else None
-    
-    def get_mentor_image_url(club_id):
-        mycursor = mydb.cursor()
-        mycursor.execute("SELECT image_url FROM faculty WHERE club_id = %s", (club_id,))
-        result = mycursor.fetchone()
-        mycursor.close()
-        return result[0] if result else None
-    
-    def get_club_head_image_url(club_id):
-        mycursor = mydb.cursor()
-        mycursor.execute("SELECT image_url FROM club_head WHERE club_id = %s", (club_id,))
-        result = mycursor.fetchone()
-        mycursor.close()
-        return result[0] if result else None
+        with mydb.cursor(dictionary=True) as mycursor:
+            mycursor.execute("SELECT name, head_id, phone_no, email, image_url FROM club_head WHERE club_id=%s", (club_id,))
+            return mycursor.fetchone()
 
-# Then use it in your Streamlit app
-    club_image_url = get_club_image_url(club_id)
-    mentor_image_url = get_mentor_image_url(club_id)
-    club_head_image_url = get_club_head_image_url(club_id)
+    # Retrieve all details
     club_details = get_club_details(club_id)
     mentor_details = get_mentor_details(club_id)
     head_details = get_head_details(club_id)
 
+    if not club_details or not mentor_details or not head_details:
+        st.error('No details available for the selected club.')
+        return  # Exit the function if any details are missing
+
     st.subheader(f"Welcome, {club_details['club_name']}")
 
-    # Custom CSS for the flip card
-    flip_card_style = """
+    if club_id:
+        st.markdown("""
     <style>
     .flip-card {
       background-color: transparent;
@@ -230,8 +202,8 @@ def club_info(club_id):
       height: 250px;
       perspective: 1000px;
       margin: auto;
-      border-radius: 15px; /* Rounded borders for the flip card */
-      overflow: hidden; /* Ensures the inner content also gets rounded corners */
+      border-radius: 15px;
+      overflow: hidden;
     }
 
     .flip-card-inner {
@@ -242,7 +214,7 @@ def club_info(club_id):
       transition: transform 0.6s;
       transform-style: preserve-3d;
       box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-      border-radius: 15px; /* Rounded borders for the inner card */
+      border-radius: 15px;
     }
 
     .flip-card:hover .flip-card-inner {
@@ -254,7 +226,7 @@ def club_info(club_id):
       width: 100%;
       height: 100%;
       backface-visibility: hidden;
-      border-radius: 15px; /* Rounded borders for the inner card */
+      border-radius: 15px;
     }
 
     .flip-card-front {
@@ -264,7 +236,6 @@ def club_info(club_id):
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 15px; /* Rounded borders for the inner card */
     }
 
     .flip-card-back {
@@ -277,82 +248,81 @@ def club_info(club_id):
         transform: rotateY(180deg);
         z-index: 1;
         padding: 20px;
-        border-radius: 15px; /* Rounded borders for the inner card */
     }
 
-    .flip-card-front img {
+    .flip-card-front img, .flip-card-back img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Cover the box area, may crop the image */
-        object-position: center; /* Center the image within the box */
+        object-fit: cover;
+        border-radius: 15px;
     }
     </style>
-    """
+    """, unsafe_allow_html=True)
 
-    # Inject custom CSS for flip card
-    st.markdown(flip_card_style, unsafe_allow_html=True)
+    #st.subheader(f"{club_details['club_name']}")
 
-    # Process and display club information using flip cards
-    with st.container():
-        col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
 
-        # Flip card for Club Details
-        with col1:
-            st.markdown(f"""
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="{club_image_url}" alt="Club Image" style="width:300px;height:200px;">
-                    </div>
-                    <div class="flip-card-back">
-                        <h4>Club Details</h4>
-                        <p>ID: {club_id}</p>
-                        <p>Name: {club_details['club_name']}</p>
-                        <p>Vertical: {club_details['vertical']}</p>
-                        <p>About: {club_details['about']}</p>
-                    </div>
+    # Flip card for Club Details
+    with col1:
+        st.markdown(f"""
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{club_details['image_url']}" alt="Club Image">
+                </div>
+                <div class="flip-card-back">
+                    <h4>Club Details</h4>
+                    <p>ID: {club_id}</p>
+                    <p>Name: {club_details['club_name']}</p>
+                    <p>Vertical: {club_details['vertical']}</p>
+                    <p>About: {club_details['about']}</p>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Flip card for Mentor Details
-        with col2:
-            st.markdown(f"""
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="{mentor_image_url}" alt="Mentor Image" style="width:300px;height:200px;">
-                    </div>
-                    <div class="flip-card-back">
-                        <h4>Mentor Details</h4>
-                        <p>Faculty ID: {mentor_details['faculty_id']}</p>
-                        <p>Name: {mentor_details['fac_name']}</p>
-                        <p>Contact: {mentor_details['phone_no']}</p>
-                        <p>Email: {mentor_details['email']}</p>
-                    </div>
+    # Flip card for Mentor Details
+    with col2:
+        st.markdown(f"""
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{mentor_details['image_url']}" alt="Mentor Image">
+                </div>
+                <div class="flip-card-back">
+                    <h4>Mentor Details</h4>
+                    <p>Faculty ID: {mentor_details['faculty_id']}</p>
+                    <p>Name: {mentor_details['fac_name']}</p>
+                    <p>Contact: {mentor_details['phone_no']}</p>
+                    <p>Email: {mentor_details['email']}</p>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Flip card for Head Details
-        with col3:
-            st.markdown(f"""
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <img src="{club_head_image_url}" alt="Head Image" style="width:300px;height:200px;">
-                    </div>
-                    <div class="flip-card-back">
-                        <h4>Head Details</h4>
-                        <p>Member ID: {head_details['head_id']}</p>
-                        <p>Name: {head_details['name']}</p>
-                        <p>Contact: {head_details['phone_no']}</p>
-                        <p>Email: {head_details['email']}</p>
-                    </div>
+    # Flip card for Head Details
+    with col3:
+        st.markdown(f"""
+        <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <img src="{head_details['image_url']}" alt="Head Image">
+                </div>
+                <div class="flip-card-back">
+                    <h4>Head Details</h4>
+                    <p>Member ID: {head_details['head_id']}</p>
+                    <p>Name: {head_details['name']}</p>
+                    <p>Contact: {head_details['phone_no']}</p>
+                    <p>Email: {head_details['email']}</p>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
 
+        mycursor.close()
+
+    # Close the database connection
     mydb.close()
 
 
