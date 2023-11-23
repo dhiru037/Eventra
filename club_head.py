@@ -1,11 +1,12 @@
 import streamlit as st
 import mysql.connector
 import pandas as pd
+from datetime import datetime
 
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="dhiru038",
+    password="Chandu@2605",
     database="project1"
 )
 mycursor = mydb.cursor()
@@ -15,7 +16,7 @@ def get_event_list(club_id):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="dhiru038",
+    password="Chandu@2605",
     database="project1"
     )
     mycursor = mydb.cursor() 
@@ -42,7 +43,7 @@ def event_creation(club_id):
             mydb = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = "dhiru038",
+            password = "Chandu@2605",
             database = "project1"
             )
             mycursor = mydb.cursor()
@@ -56,36 +57,78 @@ def event_creation(club_id):
             mydb.close()
 
 
+
 def approval_status(club_id):
-    st.subheader("Approval Status")
-    result=get_event_list(club_id)
-    df = pd.DataFrame(result,columns=("Event ID","Name","Date","Venue","Description","Faculty Approval","Dean Approval","Remarks","Proposal"))
-    st.table(df)
+    # Connect to the database
     mydb = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    password = "dhiru038",
-    database = "project1"
+        host="localhost",
+        user="root",
+        password="Chandu@2605",
+        database="project1"
     )
-    mycursor = mydb.cursor()
-    with st.form("ReqApproval"):
-        st.write("Request for Approval / Update Remarks")
-        event_id=st.text_input("Event ID")
-        remarks=st.text_area("Add remarks of updates on Proposal")
-        reqApproval = st.form_submit_button("Update")
-        if reqApproval:
-            mycursor.execute("update event set remarks = %s where event_id = %s",(remarks,event_id,))
-            mydb.commit()
-            st.success("Remarks Updated!")
-    mycursor.close()
+
+    # Function to get the event list
+    def get_event_list(club_id):
+        mycursor = mydb.cursor(dictionary=True)
+        mycursor.execute("SELECT * FROM event WHERE club_id = %s", (club_id,))
+        result = mycursor.fetchall()
+        mycursor.close()
+        return result
+
+    st.subheader("Approval Status")
+
+    # Retrieve events
+    events = get_event_list(club_id)
+
+    # Process and display events
+    for event in events:
+        with st.container():
+            # Use columns to create a card-like layout
+            col1, col2 = st.columns([2, 3])
+            # Style the container to look like a card
+            with col1:
+                st.markdown(f"""
+                    <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 10px 0;">
+                        <p style="font-size: 14px;"><b>Event Name:</b> {event['name']}</p>
+                        <p style="font-size: 14px;"><b>Date:</b> {event['date']}</p>
+                        <p style="font-size: 14px;"><b>Venue:</b> {event['venue']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+            with col2:
+                with st.expander("See Details"):
+                    st.write(f"About : {event['about']}")
+                    st.write(f"Faculty Approval: {event['fac_approval']}")
+                    st.write(f"Dean Approval: {event['dean_approval']}")
+                    st.text_area("Remarks", value=event['remarks'], disabled=True)
+                    if event['proposal']:
+                        st.markdown(f"[View Proposal]({event['proposal']})", unsafe_allow_html=True)
+
+                # Update remarks form for each event
+                with st.form(f"update_{event['event_id']}"):
+                    remarks = st.text_area("Update Remarks", key=f"remarks_{event['event_id']}")
+                    submitted = st.form_submit_button("Update")
+                    if submitted:
+                        # Perform the update
+                        mycursor = mydb.cursor()
+                        mycursor.execute(
+                            "UPDATE event SET remarks = %s WHERE event_id = %s",
+                            (remarks, event['event_id'],)
+                        )
+                        mydb.commit()
+                        st.success("Remarks updated successfully!")
+                        mycursor.close()
+
+    # Close the database connection
     mydb.close()
+
 
 def event_registration(event_id):
     st.subheader("Event Registrations")
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="dhiru038",
+    password="Chandu@2605",
     database="project1"
     )
     mycursor = mydb.cursor() 
@@ -100,7 +143,7 @@ def club_info(club_id):
     mydb = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="dhiru038",
+    password="Chandu@2605",
     database="project1"
     )
     mycursor = mydb.cursor()
