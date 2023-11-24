@@ -298,6 +298,7 @@ def approval_status(club_id):
                                 <p><b>Venue:</b> {event['venue']}</p>
                                 <p><b>Faculty Approval:</b> {event['fac_approval']}</p>
                                 <p><b>Dean Approval:</b> {event['dean_approval']}</p>
+                                <p><b>Latest Remarks:</b> {event['remarks']}</p>
                             </div>
                         </div>
                     </div>
