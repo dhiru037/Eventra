@@ -306,7 +306,7 @@ def new_events():
     JOIN club c ON e.club_id = c.club_id;
     """)
     result = mycursor.fetchall()
-    df = pd.DataFrame(result, columns=("Event ID", "Name", "Date", "Venue", "Description", "Faculty Approval", "Dean Approval", "Remarks", "Proposal", "Club ID", "Club Name"))
+    df = pd.DataFrame(result, columns=("Event ID", "Name", "Date", "Venue", "Description", "Proposal","Faculty Approval", "Dean Approval", "Remarks",  "Club ID", "Club Name"))
     
     
     # Convert 'Date' column to datetime format
@@ -384,6 +384,7 @@ def new_events():
             
             # Use an expander to show details when clicked
             with st.expander("Show Details"):
+                st.write(f"**Event ID:** {row['Event ID']}")
                 st.write(f"**Date:** {row['Date'].strftime('%Y-%m-%d')}")
                 st.write(f"**Venue:** {row['Venue']}")
                 st.write(f"**Description:** {row['Description']}")
@@ -397,7 +398,9 @@ def new_events():
     
     with st.form("Approval"):
         st.write("Update Approval/Remarks")
-        event_id=st.text_input("Event ID")
+        options=[item[1] for item in result]
+        #event_id=st.text_input("Event ID")
+        event_id=st.selectbox("Event Name",options,index=None,placeholder="Choose")
         status=st.selectbox("Status",["Pending","Edits Suggested","Approved"],index=None)
         remarks=st.text_area("Add remarks of updates on Proposal")
         reqApproval = st.form_submit_button("Update")
