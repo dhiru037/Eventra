@@ -38,4 +38,21 @@ UPDATE faculty SET image_url = 'https://drive.google.com/uc?export=view&id=1czHz
 UPDATE club_head SET image_url = 'https://drive.google.com/uc?export=view&id=1FUg5QU-iXuePnMmlPUslcEnT_ZjBYxUW' WHERE head_id = 'MEM01';
 UPDATE club_head SET image_url = 'https://drive.google.com/uc?export=view&id=1uM_rOVLzofVtuBN2Q2FbetUKWGbIVGfZ' WHERE head_id = 'MEM02';
 
+ALTER TABLE event MODIFY COLUMN dean_approval VARCHAR(100);
+ALTER TABLE event MODIFY COLUMN fac_approval VARCHAR(100);
 
+UPDATE event
+SET proposal = 'https://docs.google.com/document/d/1T8A6u2vjP38PmTZrHoC3k3_JDdKjyheJ1NL4cmBj4JE/edit',
+about = 'fundraising for government schools',
+dean_approval = 'Pending'  -- Replace with your actual proposal link
+WHERE event_id = 'EV02';
+
+UPDATE event
+SET proposal = 'https://docs.google.com/document/d/1T20EA7Fklqjez-HJdTewvs0xTmHH5D5xI5hXW7zrhSw/edit'  -- Replace with your actual proposal link  -- Replace with actual dean approval status
+WHERE event_id = 'EV03';
+
+UPDATE event
+SET proposal = 'https://docs.google.com/document/d/1cwovA7XWu17q-T3ClClEhi-_EIpwEKikJKEthB8VrdA/edit'   -- Replace with actual dean approval status
+WHERE event_id = 'EV04';
+
+select * from event;
