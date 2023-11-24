@@ -7,7 +7,7 @@ from mysql.connector import Error
 mydb = mysql.connector.connect(
     host = "localhost",
     user = "root",
-    password = "dhiru038",
+    password = "Chandu@2605",
     database = "project1"
 )
 mycursor = mydb.cursor()
@@ -20,7 +20,7 @@ def create_server_connection(host_name, user_name, user_password, db_name):
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
-            passwd='dhiru038',
+            passwd='Chandu@2605',
             database='project1'
         )
         st.success("MySQL Database connection successful")
@@ -38,8 +38,12 @@ def app():
     mycursor.close()
     mydb.close()
     
-    st.title(":violet[EVENTRA]")
-    st.header("College Event Management Platform")
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:  # Using the center column to display the image
+        logo_path = 'images/logo.png'  # The path to your logo file
+        st.image(logo_path, width=300, output_format='PNG')
+
+    #st.header("College Event Management Platform")
     st.subheader("Login")
     name = st.text_input("Name")
     password = st.text_input("Password", type='password', help="Your ID is your password")

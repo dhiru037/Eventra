@@ -342,7 +342,15 @@ def approval_status(club_id):
 
 
 def app():
-    st.title(":rainbow[Eventra]")
+    col1, col2, col3 = st.columns([1, 2, 1])
+
+    # Place the image in the middle column for center alignment
+    with col2:
+        logo_path = 'images/logo.png'  # Replace with your actual path to the logo file
+        st.image(logo_path, width=300, output_format='PNG')  # Set width and format for the image
+
+    # Add a divider after the logo if needed
+    st.divider()
     st.header("Club Mentor Dashboard")
     st.divider()
     fac_id=st.sidebar.text_input("Faculty ID")

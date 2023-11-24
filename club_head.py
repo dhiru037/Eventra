@@ -32,29 +32,57 @@ def event_creation(club_id):
     st.subheader("Event Creation")
     with st.form("EventCreation"):
         st.write("New Event Details")
-        event_id=st.text_input("Event ID")
-        name=st.text_input("Name")
-        date=st.date_input("Date")
-        venue=st.text_input("Venue")
-        about=st.text_area("Description")
-        proposal=st.text_input("Proposal link")
-        create=st.form_submit_button("Create Event")
+        event_id = st.text_input("Event ID")
+        name = st.text_input("Name")
+        date = st.date_input("Date")
+        venue = st.text_input("Venue")
+        about = st.text_area("Description")
+        proposal = st.text_input("Proposal link")
+        create = st.form_submit_button("Create Event")
+
         if create:
-            mydb = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = "Chandu@2605",
-            database = "project1"
-            )
-            mycursor = mydb.cursor()
-            sql=("insert into event values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
-            values=(event_id,name,date,venue,about,'Pending','Pending','Event Created',club_id,proposal)
-            mycursor.execute(sql,values)
-            mydb.commit()
-            st.success("Event Created!")
-            st.balloons()
-            mycursor.close()
-            mydb.close()
+            # Check if all fields are filled
+            if not event_id or not name or not date or not venue or not about or not proposal:
+                st.warning("All fields are required. Please fill out every field.")
+            else:
+                # Check for event collision
+                mydb = mysql.connector.connect(
+                    host="localhost",
+                    user="root",
+                    password="Chandu@2605",
+                    database="project1"
+                )
+                mycursor = mydb.cursor()
+
+                # Query for events with the same date and venue
+                collision_check_query = """
+                SELECT * FROM event
+                WHERE date = %s AND venue = %s
+                """
+                mycursor.execute(collision_check_query, (date, venue))
+                collision_event = mycursor.fetchone()
+
+                if collision_event:
+                    st.error("This slot is already occupied by another event.")
+                else:
+                    try:
+                        # Since there's no collision, insert the new event
+                        sql = """
+                        INSERT INTO event 
+                        (event_id, name, date, venue, about, fac_approval, dean_approval, remarks, club_id, proposal) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """
+                        values = (event_id, name, date, venue, about, 'Pending', 'Pending', 'Event Created', club_id, proposal)
+                        mycursor.execute(sql, values)
+                        mydb.commit()
+                        st.success("Event Created!")
+                        st.balloons()
+
+                    except mysql.connector.Error as err:
+                        st.error(f"An error occurred: {err}")
+                    finally:
+                        mycursor.close()
+                        mydb.close()
 
 
 def approval_status(club_id):
@@ -328,7 +356,14 @@ def club_info(club_id):
 
 
 def app():
-    st.title(":rainbow[Eventra]")
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+
+    # Place the image in the middle column for center alignment
+    with col2:
+        logo_path = 'images/logo.png'  # Replace with your actual path to the logo file
+        st.image(logo_path, width=300, output_format='PNG')  # Set width and format for the image
+    st.divider()
     st.header("Club Head Dashboard")
     st.divider()
     club_id=st.sidebar.text_input("Club ID")
