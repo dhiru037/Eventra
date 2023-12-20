@@ -36,7 +36,7 @@ UPDATE faculty SET image_url = 'https://drive.google.com/uc?export=view&id=1pBX7
 UPDATE faculty SET image_url = 'https://drive.google.com/uc?export=view&id=1czHz5uy4-lLXWLL_7pE-aKbnpGl2-7QU' WHERE faculty_id = 'FAC02';
 
 UPDATE club_head SET image_url = 'https://drive.google.com/uc?export=view&id=1FUg5QU-iXuePnMmlPUslcEnT_ZjBYxUW' WHERE head_id = 'MEM01';
-UPDATE club_head SET image_url = 'https://drive.google.com/uc?export=view&id=1uM_rOVLzofVtuBN2Q2FbetUKWGbIVGfZ' WHERE head_id = 'MEM02';
+UPDATE club_head SET image_url = 'https://drive.google.com/uc?export=view&id=1AanZt5G1fRwv0Fz1MaMRSTiCrxT4ARBd' WHERE head_id = 'MEM02';
 
 ALTER TABLE event MODIFY COLUMN dean_approval VARCHAR(100);
 ALTER TABLE event MODIFY COLUMN fac_approval VARCHAR(100);
